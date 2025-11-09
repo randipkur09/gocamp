@@ -37,7 +37,17 @@
             <div class="col-md-6">
               <h5 class="text-success fw-bold">Rp {{ number_format($p->price, 0, ',', '.') }}/hari</h5>
               <p class="mt-3">{{ $p->description ?? 'Tidak ada deskripsi' }}</p>
-              <button class="btn btn-success w-100 mt-3">Sewa Sekarang</button>
+
+              {{-- 🔰 Form Penyewaan --}}
+              <form action="{{ route('rent.store', $p->id) }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                  <label for="days" class="form-label">Durasi Sewa (hari)</label>
+                  <input type="number" name="days" class="form-control" min="1" value="1" required>
+                </div>
+                <button class="btn btn-success w-100 mt-2">Sewa Sekarang</button>
+              </form>
+
             </div>
           </div>
         </div>
