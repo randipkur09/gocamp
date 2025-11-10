@@ -8,25 +8,41 @@
     @method('PUT')
 
     <div class="mb-3">
-        <label>Nama Produk</label>
+        <label class="form-label">Nama Produk</label>
         <input type="text" name="name" value="{{ $product->name }}" class="form-control" required>
     </div>
+
     <div class="mb-3">
-        <label>Harga (Rp)</label>
+        <label class="form-label">Harga (Rp / Hari)</label>
         <input type="number" name="price" value="{{ $product->price }}" class="form-control" required>
     </div>
+
     <div class="mb-3">
-        <label>Deskripsi</label>
-        <textarea name="description" class="form-control">{{ $product->description }}</textarea>
+        <label class="form-label">Stok</label>
+        <input type="number" name="stock" value="{{ $product->stock }}" class="form-control" required>
     </div>
+
     <div class="mb-3">
-        <label>Gambar</label>
+        <label class="form-label">Deskripsi</label>
+        <textarea name="description" class="form-control" rows="4">{{ $product->description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Gambar</label>
         @if($product->image)
-            <img src="{{ asset('images/'.$product->image) }}" width="100" class="d-block mb-2">
+            <img src="{{ asset('images/'.$product->image) }}" width="120" class="d-block mb-2 rounded shadow-sm">
         @endif
         <input type="file" name="image" class="form-control">
+        <small class="text-muted">Biarkan kosong jika tidak ingin mengganti gambar.</small>
     </div>
-    <button class="btn btn-success">Update</button>
-    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Kembali</a>
+
+    <div class="d-flex justify-content-between">
+        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-save"></i> Update
+        </button>
+    </div>
 </form>
 @endsection
