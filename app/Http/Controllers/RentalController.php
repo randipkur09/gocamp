@@ -80,6 +80,23 @@ public function uploadPayment(Request $request, $id)
     return back()->with('success', 'Bukti pembayaran berhasil diupload.');
 }
 
+public function returnItem($id)
+{
+    $rental = Rental::findOrFail($id);
+
+    // Pastikan hanya bisa dikembalikan kalau statusnya 'approved'
+    if ($rental->status !== 'approved') {
+        return back()->with('error', 'Barang belum disetujui untuk dikembalikan.');
+    }
+
+    $rental->update([
+        'is_returned' => true,
+        'status' => 'returned',
+        'return_date' => now(),
+    ]);
+
+    return back()->with('success', 'Barang berhasil dikembalikan.');
+}
 
 
 

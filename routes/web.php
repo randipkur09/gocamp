@@ -24,7 +24,7 @@ Route::post('/user/rentals/{id}/upload', [App\Http\Controllers\RentalController:
 
 
 // =============================
-// 🏠 DASHBOARD ROUTES
+// DASHBOARD ROUTES
 // =============================
 Route::middleware(['auth'])->group(function () {
     // Admin dashboard
@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function() {
     });
 });
 
-
+Route::post('/rentals/{id}/return', [RentalController::class, 'returnItem'])->name('rentals.return');
 
 });
 

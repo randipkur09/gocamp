@@ -84,4 +84,64 @@
   </table>
 </div>
 
+
+<!-- ========================================================= -->
+<!-- DAFTAR PENYEWAAN BARANG -->
+<!-- ========================================================= -->
+<div class="mt-5">
+  <h4 class="fw-bold mb-3 text-success">Daftar Penyewaan</h4>
+
+  <table class="table table-bordered table-hover align-middle shadow-sm">
+    <thead class="table-success">
+      <tr>
+        <th>#</th>
+        <th>Nama Penyewa</th>
+        <th>Produk</th>
+        <th>Lama Sewa (hari)</th>
+        <th>Total Harga</th>
+        <th>Status</th>
+        <th>Tanggal Pengembalian</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      @forelse($rentals as $r)
+      <tr>
+        <td>{{ $loop->iteration }}</td>
+        <td>{{ $r->user->name }}</td>
+        <td>{{ $r->product->name }}</td>
+        <td>{{ $r->days }}</td>
+        <td>Rp {{ number_format($r->total_price, 0, ',', '.') }}</td>
+        <td>
+          @if ($r->status == 'pending')
+            <span class="badge bg-warning text-dark">Menunggu</span>
+          @elseif ($r->status == 'approved')
+            <span class="badge bg-success">Disetujui</span>
+          @elseif ($r->status == 'returned')
+            <span class="badge bg-secondary">Dikembalikan</span>
+          @endif
+        </td>
+        <td>
+          {{ $r->return_date ? $r->return_date : '-' }}
+        </td>
+        <td>
+          @if ($r->status == 'approved' && !$r->is_returned)
+            <form action="{{ route('rentals.return', $r->id) }}" method="POST">
+              @csrf
+              <button type="submit" class="btn btn-sm btn-outline-primary">Tandai Dikembalikan</button>
+            </form>
+          @elseif ($r->is_returned)
+            <span class="text-muted small">Selesai</span>
+          @endif
+        </td>
+      </tr>
+      @empty
+      <tr>
+        <td colspan="8" class="text-center text-muted">Belum ada transaksi penyewaan.</td>
+      </tr>
+      @endforelse
+    </tbody>
+  </table>
+</div>
+
 @endsection
