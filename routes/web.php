@@ -6,60 +6,68 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RentalController;
+use App\Http\Controllers\ProfileController;
 
 // =============================
-// 🔐 AUTH ROUTES
+// Redirect Root ke Login
+// =============================
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+// =============================
+// AUTH ROUTES
 // =============================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// =============================
+// RENTAL ROUTES (umum)
+// =============================
 Route::put('/admin/rentals/{rental}', [RentalController::class, 'update'])->name('admin.rentals.update');
 Route::post('/user/rentals/{rental}/upload', [RentalController::class, 'uploadProof'])->name('user.rentals.upload');
-Route::post('/user/rentals/{id}/upload', [App\Http\Controllers\RentalController::class, 'uploadPayment'])
-    ->name('user.uploadPayment');
-
-
+Route::post('/user/rentals/{id}/upload', [RentalController::class, 'uploadPayment'])->name('user.uploadPayment');
+Route::post('/rentals/{id}/return', [RentalController::class, 'returnItem'])->name('rentals.return');
 
 // =============================
 // DASHBOARD ROUTES
 // =============================
 Route::middleware(['auth'])->group(function () {
-    // Admin dashboard
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])
-        ->name('admin.dashboard')
-        ->middleware('admin');
+
+    // Admin dashboard & resources
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::resource('/admin/products', ProductController::class)->names('admin.products');
+        Route::get('/admin/rentals', [RentalController::class, 'adminRentals'])->name('admin.rentals');
+    });
 
     // User dashboard
-    Route::get('/user/dashboard', [UserController::class, 'index'])
-        ->name('user.dashboard');
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::resource('/admin/products', ProductController::class)->names('admin.products');
-    });
+    Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::resource('products', ProductController::class);
-    });
-});
-Route::middleware(['auth'])->group(function() {
-    Route::get('/user/dashboard', [App\Http\Controllers\UserController::class, 'index'])->name('user.dashboard');
-});
-
-Route::middleware('auth')->group(function() {
+    // Rentals for users
     Route::post('/rent/{product}', [RentalController::class, 'store'])->name('rent.store');
     Route::get('/user/rentals', [RentalController::class, 'userRentals'])->name('user.rentals');
 
-    Route::middleware('admin')->group(function() {
-        Route::get('/admin/rentals', [RentalController::class, 'adminRentals'])->name('admin.rentals');
-    });
+    // Notifications
+    Route::get('/mark-all-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back();
+    })->name('markAllRead');
+
+    // Profile routes
+    Route::get('/user/profile', [ProfileController::class, 'show'])->name('user.profile.show');
+    Route::get('/user/profile/edit', [ProfileController::class, 'edit'])->name('user.profile.edit');
+    Route::put('/user/profile/update', [ProfileController::class, 'update'])->name('user.profile.update');
+    Route::delete('/user/profile/destroy', [ProfileController::class, 'destroy'])->name('user.profile.destroy');
 });
 
-Route::post('/rentals/{id}/return', [RentalController::class, 'returnItem'])->name('rentals.return');
-
-});
-
+// =============================
+// CLEAR SESSION (tanpa login)
+// =============================
+Route::post('/session/clear-account-deleted', function () {
+    session()->forget('account_deleted');
+    return response()->noContent();
+})->name('session.clear.account_deleted');
