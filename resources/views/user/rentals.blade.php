@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-5">
-    <h2 class="mb-4">Daftar Transaksi Penyewaan</h2>
+    <h2 class="mb-4 fw-bold text-success">Daftar Transaksi Penyewaan</h2>
 
     {{-- Flash Message --}}
     @if(session('success'))
@@ -18,7 +18,7 @@
         </div>
     @else
         <div class="table-responsive">
-            <table class="table table-bordered align-middle">
+            <table class="table table-bordered align-middle shadow-sm">
                 <thead class="table-dark text-center">
                     <tr>
                         <th>No</th>
@@ -28,7 +28,7 @@
                         <th>Tanggal Sewa</th>
                         <th>Status</th>
                         <th>Bukti Pembayaran</th>
-                        <th>Aksi</th>
+                        <th width="220">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -50,6 +50,8 @@
                                     <span class="badge bg-secondary">{{ ucfirst($r->status) }}</span>
                                 @endif
                             </td>
+
+                            {{-- Bukti pembayaran --}}
                             <td>
                                 @if($r->payment_proof)
                                     <a href="{{ asset('storage/' . $r->payment_proof) }}" target="_blank">
@@ -59,20 +61,30 @@
                                     <span class="text-muted">Belum diupload</span>
                                 @endif
                             </td>
+
+                            {{-- Aksi --}}
                             <td>
-                                {{-- Jika belum upload bukti pembayaran --}}
+                                {{-- Upload bukti pembayaran --}}
                                 @if(!$r->payment_proof)
-                                    <form action="{{ route('user.uploadPayment', $r->id) }}" method="POST" enctype="multipart/form-data">
+                                    <form action="{{ route('user.uploadPayment', $r->id) }}" method="POST" enctype="multipart/form-data" class="mb-2">
                                         @csrf
-                                        <div class="mb-2">
-                                            <input type="file" name="payment_proof" class="form-control form-control-sm" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-sm w-100">
-                                            Upload Bukti
-                                        </button>
+                                        <input type="file" name="payment_proof" class="form-control form-control-sm mb-1" required>
+                                        <button type="submit" class="btn btn-sm btn-primary w-100">Upload Bukti</button>
                                     </form>
-                                @else
-                                    <small class="text-success d-block">Sudah diupload</small>
+                                @endif
+
+                                {{-- Hapus transaksi (jika pending) --}}
+                                @if($r->status == 'pending')
+                                    <form action="{{ route('user.rentals.destroy', $r->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus transaksi ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger w-100">Hapus</button>
+                                    </form>
+                                @endif
+
+                                {{-- Sudah upload --}}
+                                @if($r->payment_proof)
+                                    <small class="text-success d-block mt-1">Sudah diupload</small>
                                 @endif
                             </td>
                         </tr>

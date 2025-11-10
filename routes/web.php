@@ -37,19 +37,26 @@ Route::post('/rentals/{id}/return', [RentalController::class, 'returnItem'])->na
 // =============================
 Route::middleware(['auth'])->group(function () {
 
-    // Admin dashboard & resources
+    // =============================
+    // ADMIN ROUTES
+    // =============================
     Route::middleware('admin')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::resource('/admin/products', ProductController::class)->names('admin.products');
         Route::get('/admin/rentals', [RentalController::class, 'adminRentals'])->name('admin.rentals');
+        Route::delete('/admin/rentals/{id}', [RentalController::class, 'destroy'])
+            ->name('admin.rentals.destroy');
     });
 
-    // User dashboard
+    // =============================
+    // USER ROUTES
+    // =============================
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-
-    // Rentals for users
-    Route::post('/rent/{product}', [RentalController::class, 'store'])->name('rent.store');
     Route::get('/user/rentals', [RentalController::class, 'userRentals'])->name('user.rentals');
+    Route::delete('/user/rentals/{id}', [RentalController::class, 'destroy'])
+        ->name('user.rentals.destroy');
+
+    Route::post('/rent/{product}', [RentalController::class, 'store'])->name('rent.store');
 
     // Notifications
     Route::get('/mark-all-read', function () {
@@ -57,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
         return back();
     })->name('markAllRead');
 
-    // Profile routes
+    // Profile
     Route::get('/user/profile', [ProfileController::class, 'show'])->name('user.profile.show');
     Route::get('/user/profile/edit', [ProfileController::class, 'edit'])->name('user.profile.edit');
     Route::put('/user/profile/update', [ProfileController::class, 'update'])->name('user.profile.update');
@@ -65,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // =============================
-// CLEAR SESSION (tanpa login)
+// CLEAR SESSION
 // =============================
 Route::post('/session/clear-account-deleted', function () {
     session()->forget('account_deleted');
