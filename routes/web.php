@@ -80,3 +80,4 @@ Route::post('/session/clear-account-deleted', function () {
     session()->forget('account_deleted');
     return response()->noContent();
 })->name('session.clear.account_deleted');
+

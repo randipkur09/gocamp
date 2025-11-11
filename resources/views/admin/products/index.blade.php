@@ -6,8 +6,20 @@
     <a href="{{ route('admin.products.create') }}" class="btn btn-success">+ Tambah Produk</a>
 </div>
 
+{{-- Notifikasi sukses --}}
 @if(session('success'))
-<div class="alert alert-success">{{ session('success') }}</div>
+    <div id="alert-success" class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Sukses!</strong> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <script>
+        // Otomatis hilang setelah 3 detik
+        setTimeout(() => {
+            const alert = document.getElementById('alert-success');
+            if (alert) alert.style.display = 'none';
+        }, 3000);
+    </script>
 @endif
 
 <table class="table table-striped table-bordered align-middle">
@@ -16,19 +28,22 @@
             <th>No</th>
             <th>Nama Produk</th>
             <th>Harga</th>
+            <th>Stok</th>
             <th>Gambar</th>
             <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($products as $p)
+        @forelse($products as $p)
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $p->name }}</td>
-            <td>Rp {{ number_format($p->price, 0, ',', '.') }}</td>
+            <td>Rp {{ number_format($p->price_per_day, 0, ',', '.') }}</td>
+            <td>{{ $p->stok ?? '0' }}</td>
             <td>
                 @if($p->image)
-                    <img src="{{ asset('images/'.$p->image) }}" alt="" width="70" class="rounded">
+                    {{-- ambil gambar dari storage --}}
+                    <img src="{{ asset('storage/'.$p->image) }}" alt="gambar {{ $p->name }}" width="70" class="rounded">
                 @else
                     <span class="text-muted">Tidak ada gambar</span>
                 @endif
@@ -38,11 +53,15 @@
                 <form action="{{ route('admin.products.destroy', $p->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
-                    <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
+                    <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus produk ini?')">Hapus</button>
                 </form>
             </td>
         </tr>
-        @endforeach
+        @empty
+        <tr>
+            <td colspan="6" class="text-center text-muted">Belum ada produk tersedia</td>
+        </tr>
+        @endforelse
     </tbody>
 </table>
 @endsection

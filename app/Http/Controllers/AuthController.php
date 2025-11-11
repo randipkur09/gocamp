@@ -24,18 +24,26 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed'
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email'=> $request->email,
-            'password'=> Hash::make($request->password),
-            'role'=> 'user'
-        ]);
+        try {
+            // Simpan user baru ke database
+            User::create([
+                'name' => $request->name,
+                'email'=> $request->email,
+                'password'=> Hash::make($request->password),
+                'role'=> 'user'
+            ]);
 
-        return redirect('/login')->with('success', 'Akun berhasil dibuat!');
+            // Jika berhasil, arahkan ke login dengan notifikasi sukses
+            return redirect('/login')->with('success', 'Akun berhasil dibuat! Silakan login.');
+        } catch (\Exception $e) {
+            // Jika gagal (misal error DB), tampilkan notifikasi error
+            return back()->with('error', 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
+        }
     }
 
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
+
         if (Auth::attempt($credentials)) {
             if (Auth::user()->role == 'admin') {
                 return redirect('/admin/dashboard');
@@ -43,6 +51,7 @@ class AuthController extends Controller
                 return redirect('/user/dashboard');
             }
         }
+
         return back()->with('error', 'Email atau password salah!');
     }
 
