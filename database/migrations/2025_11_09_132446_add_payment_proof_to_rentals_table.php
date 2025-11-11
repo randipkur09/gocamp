@@ -6,24 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Jalankan migrasi.
-     */
     public function up(): void
     {
         Schema::table('rentals', function (Blueprint $table) {
-            // Menambahkan kolom bukti pembayaran
-            $table->string('payment_proof')->nullable()->after('status');
+            // Tambahkan hanya jika kolom belum ada
+            if (!Schema::hasColumn('rentals', 'payment_proof')) {
+                $table->string('payment_proof')->nullable();
+            }
         });
     }
 
-    /**
-     * Batalkan migrasi.
-     */
     public function down(): void
     {
         Schema::table('rentals', function (Blueprint $table) {
-            $table->dropColumn('payment_proof');
+            if (Schema::hasColumn('rentals', 'payment_proof')) {
+                $table->dropColumn('payment_proof');
+            }
         });
     }
 };
