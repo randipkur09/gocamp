@@ -9,19 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+public function up()
 {
     Schema::create('rentals', function (Blueprint $table) {
         $table->id();
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->foreignId('product_id')->constrained()->onDelete('cascade');
         $table->integer('days');
-        $table->integer('total_price');
-        $table->string('status')->default('pending'); // pending, approved, returned
+        $table->decimal('total_price', 15, 2);
+        $table->string('payment_proof')->nullable();
+        $table->enum('status', ['pending', 'approved', 'returned'])->default('pending');
         $table->timestamps();
     });
 }
-
 
     /**
      * Reverse the migrations.

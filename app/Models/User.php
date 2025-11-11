@@ -15,13 +15,13 @@ class User extends Authenticatable
      * Kolom yang bisa diisi massal.
      */
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'phone',
-    'address',
-    'birth_date',
-    'photo',
+        'name',
+        'email',
+        'password',
+        'phone',
+        'address',
+        'birth_date',
+        'photo',
     ];
 
     /**
@@ -41,7 +41,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Relasi ke tabel rentals (jika kamu punya fitur penyewaan).
+     * Relasi ke tabel rentals.
      */
     public function rentals()
     {

@@ -18,8 +18,8 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Stok</label>
-        <input type="number" name="stock" value="{{ $product->stock }}" class="form-control" required>
+        <label for="stok" class="form-label">Stok</label>
+        <input type="number" name="stok" class="form-control" value="{{ old('stok', $product->stok) }}">
     </div>
 
     <div class="mb-3">

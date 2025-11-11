@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Rental;
 use App\Models\Product;
 use App\Models\User;
-use App\Notifications\TransaksiBaruNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\TransaksiBaruNotification;
+use App\Notifications\RentalApprovedNotification;
+use App\Notifications\BuktiPembayaranUploadedNotification;
 
 class RentalController extends Controller
 {
@@ -20,7 +22,7 @@ class RentalController extends Controller
     {
         $days = $request->days ?? 1;
 
-        // Cek stok dulu
+        // Cek stok produk
         if ($product->stock <= 0) {
             return back()->with('error', 'Stok produk habis!');
         }
@@ -53,11 +55,7 @@ class RentalController extends Controller
     // =============================
     public function userRentals()
     {
-        $rentals = Rental::with('product')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
-
+        $rentals = Rental::where('user_id', auth()->id())->with('product')->get();
         return view('user.rentals', compact('rentals'));
     }
 
@@ -66,7 +64,7 @@ class RentalController extends Controller
     // =============================
     public function adminRentals()
     {
-        $rentals = Rental::with(['product', 'user'])->latest()->get();
+        $rentals = Rental::with(['user', 'product'])->get();
         return view('admin.rentals', compact('rentals'));
     }
 
@@ -82,14 +80,14 @@ class RentalController extends Controller
 
         // Jika disetujui, kirim notifikasi ke user
         if ($request->status === 'approved' && $oldStatus !== 'approved') {
-            $rental->user->notify(new \App\Notifications\RentalApprovedNotification($rental));
+            $rental->user->notify(new RentalApprovedNotification($rental));
         }
 
         return back()->with('success', 'Status penyewaan berhasil diperbarui menjadi ' . ucfirst($request->status) . '!');
     }
 
     // =============================
-    // UPLOAD BUKTI PEMBAYARAN (USER)
+    // UPLOAD BUKTI PEMBAYARAN
     // =============================
     public function uploadPayment(Request $request, $id)
     {
@@ -112,14 +110,14 @@ class RentalController extends Controller
         // Kirim notifikasi ke admin bahwa user sudah upload bukti
         $admin = User::where('role', 'admin')->first();
         if ($admin) {
-            Notification::send($admin, new \App\Notifications\BuktiPembayaranUploadedNotification($rental));
+            Notification::send($admin, new BuktiPembayaranUploadedNotification($rental));
         }
 
         return back()->with('success', 'Bukti pembayaran berhasil diupload.');
     }
 
     // =============================
-    // RETURN BARANG (ADMIN ATAU USER)
+    // RETURN BARANG
     // =============================
     public function returnItem($id)
     {
@@ -130,9 +128,8 @@ class RentalController extends Controller
         }
 
         $rental->update([
-            'is_returned' => true,
             'status' => 'returned',
-            'return_date' => now(),
+            'returned_at' => now(),
         ]);
 
         // Tambahkan stok kembali ke produk
@@ -142,7 +139,7 @@ class RentalController extends Controller
     }
 
     // =============================
-    // HAPUS TRANSAKSI (ADMIN ATAU USER)
+    // HAPUS TRANSAKSI
     // =============================
     public function destroy($id)
     {

@@ -9,11 +9,16 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'price',
-        'description',
-        'image',
-        'category'
-    ];
+protected $fillable = [
+    'name',
+    'price_per_day',
+    'stok',
+    'description',
+    'image',
+];
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
 }

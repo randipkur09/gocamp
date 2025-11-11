@@ -3,7 +3,7 @@
 
 <div class="text-center mb-5">
   <h2 class="fw-bold text-success">Selamat Datang di GoCamp!</h2>
-  <p class="text-muted">Temukan peralatan camping terbaik untuk petualanganmu 🌲</p>
+  <p class="text-muted">Temukan peralatan camping terbaik untuk petualanganmu.</p>
 </div>
 
 <div class="row g-4">
@@ -38,7 +38,7 @@
               <h5 class="text-success fw-bold">Rp {{ number_format($p->price, 0, ',', '.') }}/hari</h5>
               <p class="mt-3">{{ $p->description ?? 'Tidak ada deskripsi' }}</p>
 
-              {{-- 🔰 Form Penyewaan --}}
+              {{-- Form Penyewaan --}}
               <form action="{{ route('rent.store', $p->id) }}" method="POST">
                 @csrf
                 <div class="mb-3">
