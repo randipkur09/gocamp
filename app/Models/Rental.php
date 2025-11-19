@@ -14,8 +14,10 @@ class Rental extends Model
         'product_id',
         'days',
         'total_price',
-        'status',
         'payment_proof',
+        'status',
+        'return_date',
+        'is_returned',
     ];
 
     public function user()

@@ -35,7 +35,10 @@ class RentalController extends Controller
             'product_id' => $product->id,
             'days' => $days,
             'total_price' => $total,
+            'payment_proof' => null,
             'status' => 'pending',
+            'return_date' => null,
+            'is_returned' => false,
         ]);
 
         // Kurangi stok produk
@@ -74,11 +77,11 @@ class RentalController extends Controller
     public function update(Request $request, Rental $rental)
     {
         $oldStatus = $rental->status;
+
         $rental->update([
             'status' => $request->status,
         ]);
 
-        // Jika disetujui, kirim notifikasi ke user
         if ($request->status === 'approved' && $oldStatus !== 'approved') {
             $rental->user->notify(new RentalApprovedNotification($rental));
         }
@@ -107,7 +110,7 @@ class RentalController extends Controller
             'payment_proof' => $path,
         ]);
 
-        // Kirim notifikasi ke admin bahwa user sudah upload bukti
+        // Notifikasi admin
         $admin = User::where('role', 'admin')->first();
         if ($admin) {
             Notification::send($admin, new BuktiPembayaranUploadedNotification($rental));
@@ -129,10 +132,11 @@ class RentalController extends Controller
 
         $rental->update([
             'status' => 'returned',
-            'returned_at' => now(),
+            'is_returned' => true,
+            'return_date' => now(),
         ]);
 
-        // Tambahkan stok kembali ke produk
+        // Kembalikan stok
         $rental->product->increment('stock');
 
         return back()->with('success', 'Barang berhasil dikembalikan.');
@@ -145,12 +149,10 @@ class RentalController extends Controller
     {
         $rental = Rental::findOrFail($id);
 
-        // Jika transaksi masih pending, stok dikembalikan
         if ($rental->status === 'pending') {
             $rental->product->increment('stock');
         }
 
-        // Hapus file bukti pembayaran jika ada
         if ($rental->payment_proof && Storage::disk('public')->exists($rental->payment_proof)) {
             Storage::disk('public')->delete($rental->payment_proof);
         }

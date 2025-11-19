@@ -13,7 +13,12 @@
       <img src="{{ asset('storage/' . $p->image) }}" class="card-img-top" alt="{{ $p->name }}">
       <div class="card-body">
         <h5 class="fw-bold">{{ $p->name }}</h5>
-        <p class="text-success fw-semibold">Rp {{ number_format($p->price, 0, ',', '.') }}/hari</p>
+
+        {{-- GUNAKAN price_per_day --}}
+        <p class="text-success fw-semibold">
+            Rp {{ number_format($p->price_per_day, 0, ',', '.') }}/hari
+        </p>
+
         <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#productModal{{ $p->id }}">
           Lihat Detail
         </button>
@@ -34,8 +39,14 @@
             <div class="col-md-6">
               <img src="{{ asset('storage/' . $p->image) }}" class="img-fluid rounded shadow-sm">
             </div>
+
             <div class="col-md-6">
-              <h5 class="text-success fw-bold">Rp {{ number_format($p->price, 0, ',', '.') }}/hari</h5>
+
+              {{-- GUNAKAN price_per_day --}}
+              <h5 class="text-success fw-bold">
+                  Rp {{ number_format($p->price_per_day, 0, ',', '.') }}/hari
+              </h5>
+
               <p class="mt-3">{{ $p->description ?? 'Tidak ada deskripsi' }}</p>
 
               {{-- Form Penyewaan --}}
@@ -45,6 +56,7 @@
                   <label for="days" class="form-label">Durasi Sewa (hari)</label>
                   <input type="number" name="days" class="form-control" min="1" value="1" required>
                 </div>
+
                 <button class="btn btn-success w-100 mt-2">Sewa Sekarang</button>
               </form>
 

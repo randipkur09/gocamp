@@ -12,12 +12,13 @@
 
     <div class="mb-3">
         <label class="form-label">Harga (Rp / Hari)</label>
-        <input type="number" name="price" class="form-control" placeholder="Contoh: 35000" required>
+        <input type="number" name="price_per_day" class="form-control" placeholder="Contoh: 35000" required>
+
     </div>
 
     <div class="mb-3">
         <label class="form-label">Stok</label>
-        <input type="number" name="stock" class="form-control" placeholder="Jumlah stok tersedia" required>
+        <input type="number" name="stok" class="form-control" placeholder="Jumlah stok tersedia" required>
     </div>
 
     <div class="mb-3">

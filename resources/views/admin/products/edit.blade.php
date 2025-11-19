@@ -14,12 +14,12 @@
 
     <div class="mb-3">
         <label class="form-label">Harga (Rp / Hari)</label>
-        <input type="number" name="price" value="{{ $product->price }}" class="form-control" required>
+        <input type="number" name="price_per_day" value="{{ $product->price_per_day }}" class="form-control" required>
     </div>
 
     <div class="mb-3">
-        <label for="stok" class="form-label">Stok</label>
-        <input type="number" name="stok" class="form-control" value="{{ old('stok', $product->stok) }}">
+        <label class="form-label">Stok</label>
+        <input type="number" name="stok" class="form-control" value="{{ old('stok', $product->stok) }}" required>
     </div>
 
     <div class="mb-3">
@@ -29,9 +29,11 @@
 
     <div class="mb-3">
         <label class="form-label">Gambar</label>
+
         @if($product->image)
-            <img src="{{ asset('images/'.$product->image) }}" width="120" class="d-block mb-2 rounded shadow-sm">
+            <img src="{{ asset('storage/'.$product->image) }}" width="120" class="d-block mb-2 rounded shadow-sm">
         @endif
+
         <input type="file" name="image" class="form-control">
         <small class="text-muted">Biarkan kosong jika tidak ingin mengganti gambar.</small>
     </div>

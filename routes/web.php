@@ -9,14 +9,14 @@ use App\Http\Controllers\RentalController;
 use App\Http\Controllers\ProfileController;
 
 // =============================
-// ROOT (redirect ke login)
+// ROOT → redirect ke login
 // =============================
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 // =============================
-// AUTH ROUTES
+// AUTH
 // =============================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -33,39 +33,77 @@ Route::middleware(['auth'])->group(function () {
     // ADMIN ROUTES
     // =============================
     Route::middleware('admin')->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-        // Produk
-        Route::resource('/admin/products', ProductController::class)->names('admin.products');
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])
+            ->name('admin.dashboard');
 
-        // Penyewaan
-        Route::get('/admin/rentals', [RentalController::class, 'adminRentals'])->name('admin.rentals');
-        Route::put('/admin/rentals/{rental}', [RentalController::class, 'update'])->name('admin.rentals.update');
-        Route::delete('/admin/rentals/{id}', [RentalController::class, 'destroy'])->name('admin.rentals.destroy');
+        // CRUD Produk
+        Route::resource('/admin/products', ProductController::class)
+            ->names('admin.products');
+
+        // Semua transaksi rental
+        Route::get('/admin/rentals', [RentalController::class, 'adminRentals'])
+            ->name('admin.rentals');
+
+        // Update status rental
+        Route::put('/admin/rentals/{rental}', [RentalController::class, 'update'])
+            ->name('admin.rentals.update');
+
+        // Hapus transaksi rental
+        Route::delete('/admin/rentals/{id}', [RentalController::class, 'destroy'])
+            ->name('admin.rentals.destroy');
     });
 
     // =============================
     // USER ROUTES
     // =============================
     Route::middleware('user')->group(function () {
-        Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 
-        // Penyewaan produk
-        Route::post('/rent/{product}', [RentalController::class, 'store'])->name('rent.store');
-        Route::get('/user/rentals', [RentalController::class, 'userRentals'])->name('user.rentals');
-        Route::post('/user/rentals/{id}/upload', [RentalController::class, 'uploadPayment'])->name('user.uploadPayment');
-        Route::post('/rentals/{id}/return', [RentalController::class, 'returnItem'])->name('rentals.return');
-        Route::delete('/user/rentals/{id}', [RentalController::class, 'destroy'])->name('user.rentals.destroy');
+        Route::get('/user/dashboard', [UserController::class, 'index'])
+            ->name('user.dashboard');
 
-        // Profile user
-        Route::get('/user/profile', [ProfileController::class, 'show'])->name('user.profile.show');
-        Route::get('/user/profile/edit', [ProfileController::class, 'edit'])->name('user.profile.edit');
-        Route::put('/user/profile/update', [ProfileController::class, 'update'])->name('user.profile.update');
-        Route::delete('/user/profile/destroy', [ProfileController::class, 'destroy'])->name('user.profile.destroy');
+        // =============================
+        // PROSES SEWA PRODUK
+        // =============================
+
+        // Membuat sewa baru
+        Route::post('/rent/{product}', [RentalController::class, 'store'])
+            ->name('rent.store');
+
+        // Halaman daftar sewa user
+        Route::get('/user/rentals', [RentalController::class, 'userRentals'])
+            ->name('user.rentals');
+
+        // Upload bukti pembayaran
+        Route::post('/user/rentals/{id}/upload', [RentalController::class, 'uploadPayment'])
+            ->name('user.uploadPayment');
+
+        // Mengembalikan barang
+        Route::post('/user/rentals/{id}/return', [RentalController::class, 'returnItem'])
+            ->name('rentals.return');
+
+        // User menghapus transaksi
+        Route::delete('/user/rentals/{id}', [RentalController::class, 'destroy'])
+            ->name('user.rentals.destroy');
+
+        // =============================
+        // PROFILE USER
+        // =============================
+        Route::get('/user/profile', [ProfileController::class, 'show'])
+            ->name('user.profile.show');
+
+        Route::get('/user/profile/edit', [ProfileController::class, 'edit'])
+            ->name('user.profile.edit');
+
+        Route::put('/user/profile/update', [ProfileController::class, 'update'])
+            ->name('user.profile.update');
+
+        Route::delete('/user/profile/destroy', [ProfileController::class, 'destroy'])
+            ->name('user.profile.destroy');
     });
 
     // =============================
-    // Notifications
+    // Notifikasi
     // =============================
     Route::get('/mark-all-read', function () {
         auth()->user()->unreadNotifications->markAsRead();
@@ -74,10 +112,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // =============================
-// CLEAR SESSION (hapus pesan akun dihapus)
+// CLEAR SESSION
 // =============================
 Route::post('/session/clear-account-deleted', function () {
     session()->forget('account_deleted');
     return response()->noContent();
 })->name('session.clear.account_deleted');
-

@@ -5,23 +5,34 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Rental;
+use App\Models\User;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     public function index()
     {
         // Ambil semua produk
-        $products = Product::all();
+        $products = Product::orderBy('created_at', 'desc')->get();
 
-        // Ambil semua penyewaan beserta relasinya (user dan produk)
-        $rentals = Rental::with(['product', 'user'])->latest()->get();
+        // Ambil semua penyewaan lengkap dengan relasi user & product
+        $rentals = Rental::with(['product', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // Data tambahan (bisa dikembangkan nanti)
-        $renters = 12; // sementara statis
-        $transactionsToday = 5; // sementara statis
-        $totalIncome = 1250000; // sementara statis
+        // Hitung total penyewa unik
+        $renters = User::whereHas('rentals')->count();
 
-        // Kirim semua data ke view dashboard
+        // Hitung transaksi hari ini
+        $transactionsToday = Rental::whereDate('created_at', Carbon::today())->count();
+
+        // Hitung total pemasukan = jumlah * harga_per_hari * durasi
+        $totalIncome = Rental::with('product')->get()->sum(function ($rental) {
+            if (!$rental->product) return 0;
+            return $rental->product->price * $rental->days;
+        });
+
+        // Return semua data ke dashboard admin
         return view('admin.dashboard', compact(
             'products',
             'rentals',
