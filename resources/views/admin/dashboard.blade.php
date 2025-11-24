@@ -61,7 +61,7 @@
         <td>
             Rp {{ number_format($p->price_per_day, 0, ',', '.') }}
         </td>
-
+ 
         <td>{{ $p->stok }}</td>
 
         <td>

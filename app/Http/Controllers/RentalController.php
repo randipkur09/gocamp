@@ -23,7 +23,7 @@ class RentalController extends Controller
         $days = $request->days ?? 1;
 
         // Cek stok produk
-        if ($product->stock <= 0) {
+        if ($product->stok <= 0) {
             return back()->with('error', 'Stok produk habis!');
         }
 
@@ -42,7 +42,7 @@ class RentalController extends Controller
         ]);
 
         // Kurangi stok produk
-        $product->decrement('stock');
+        $product->decrement('stok');
 
         // Kirim notifikasi ke admin
         $admin = User::where('role', 'admin')->first();
@@ -137,7 +137,7 @@ class RentalController extends Controller
         ]);
 
         // Kembalikan stok
-        $rental->product->increment('stock');
+        $rental->product->increment('stok');
 
         return back()->with('success', 'Barang berhasil dikembalikan.');
     }
@@ -150,7 +150,7 @@ class RentalController extends Controller
         $rental = Rental::findOrFail($id);
 
         if ($rental->status === 'pending') {
-            $rental->product->increment('stock');
+            $rental->product->increment('stok');
         }
 
         if ($rental->payment_proof && Storage::disk('public')->exists($rental->payment_proof)) {
