@@ -19,39 +19,38 @@ class RentalController extends Controller
     // USER MENYEWA PRODUK
     // =============================
     public function store(Request $request, Product $product)
-    {
-        $days = $request->days ?? 1;
+{
+    $days = $request->days ?? 1;
 
-        // Cek stok produk
-        if ($product->stok <= 0) {
-            return back()->with('error', 'Stok produk habis!');
-        }
-
-        $total = $product->price * $days;
-
-        // Buat transaksi rental baru
-        $rental = Rental::create([
-            'user_id' => Auth::id(),
-            'product_id' => $product->id,
-            'days' => $days,
-            'total_price' => $total,
-            'payment_proof' => null,
-            'status' => 'pending',
-            'return_date' => null,
-            'is_returned' => false,
-        ]);
-
-        // Kurangi stok produk
-        $product->decrement('stok');
-
-        // Kirim notifikasi ke admin
-        $admin = User::where('role', 'admin')->first();
-        if ($admin) {
-            $admin->notify(new TransaksiBaruNotification($rental));
-        }
-
-        return back()->with('success', 'Berhasil menyewa produk! Silakan upload bukti pembayaran.');
+    if ($product->stok <= 0) {
+        return back()->with('error', 'Stok produk habis!');
     }
+
+    // PERBAIKAN DI SINI
+    $total = $product->price_per_day * $days;
+    // dd($total);
+
+    $rental = Rental::create([
+        'user_id' => Auth::id(),
+        'product_id' => $product->id,
+        'days' => $days,
+        'total_price' => $total,
+        'payment_proof' => null,
+        'status' => 'pending',
+        'return_date' => null,
+        'is_returned' => false,
+    ]);
+
+    $product->decrement('stok');
+
+    $admin = User::where('role', 'admin')->first();
+    if ($admin) {
+        $admin->notify(new TransaksiBaruNotification($rental));
+    }
+
+    return back()->with('success', 'Berhasil menyewa produk! Silakan upload bukti pembayaran.');
+}
+
 
     // =============================
     // DAFTAR SEWA USER
@@ -113,7 +112,7 @@ class RentalController extends Controller
         // Notifikasi admin
         $admin = User::where('role', 'admin')->first();
         if ($admin) {
-            Notification::send($admin, new BuktiPembayaranUploadedNotification($rental));
+            // Notification::send($admin, new BuktiPembayaranUploadedNotification($rental));
         }
 
         return back()->with('success', 'Bukti pembayaran berhasil diupload.');
