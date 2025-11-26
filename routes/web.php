@@ -7,6 +7,17 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\OtpController;
+
+Route::get('/forgot-password', [OtpController::class, 'forgotPasswordView'])->name('forgot.view');
+Route::post('/forgot-password', [OtpController::class, 'sendOtp'])->name('forgot.send');
+
+Route::get('/verify-otp', [OtpController::class, 'verifyOtpView'])->name('otp.view');
+Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+
+Route::get('/reset-password', [OtpController::class, 'resetPasswordView'])->name('reset.view');
+Route::post('/reset-password', [OtpController::class, 'resetPassword'])->name('reset.submit');
+
 
 // =============================
 // ROOT → redirect ke login
@@ -23,6 +34,10 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/otp/send', [OtpController::class, 'sendOtp']);
+Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+Route::post('/otp/reset', [OtpController::class, 'resetPassword']);
+
 
 // =============================
 // ROUTE YANG BUTUH LOGIN

@@ -22,6 +22,10 @@
 
         <button type="submit" class="btn w-100" style="background:#1B5E20;color:white;">Login</button>
 
+        <p class="mt-2 text-center">
+          <a href="/forgot-password" class="text-success fw-bold">Lupa Password?</a>
+        </p>
+
         <p class="mt-3 text-center">
           Belum punya akun?
           <a href="/register" class="text-success fw-bold">Daftar di sini</a>
@@ -61,7 +65,6 @@
       timer: 2000
     });
 
-    // Hapus session agar pesan tidak muncul lagi setelah reload
     fetch("{{ route('session.clear.account_deleted') }}", { 
       method: 'POST', 
       headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } 
