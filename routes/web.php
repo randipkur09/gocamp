@@ -77,6 +77,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/user/dashboard', [UserController::class, 'index'])
             ->name('user.dashboard');
 
+        Route::get('/products/{id}', [ProductController::class, 'show'])
+    ->name('products.show');
+
+
         // =============================
         // PROSES SEWA PRODUK
         // =============================

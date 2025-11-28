@@ -58,6 +58,13 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('product'));
     }
 
+    public function show($id)
+{
+    $product = \App\Models\Product::findOrFail($id);
+    return view('user.detail', compact('product'));
+}
+
+
     /**
      * Update produk
      */

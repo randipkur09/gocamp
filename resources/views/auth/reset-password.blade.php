@@ -1,24 +1,66 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
-  <div class="col-md-5">
-    <div class="card shadow p-4">
-      <h3 class="text-center fw-bold text-success mb-3">Reset Password</h3>
+<div class="flex justify-center items-center min-h-screen pt-20 pb-10">
+  <div class="w-full max-w-md">
+    {{-- Header --}}
+    <div class="text-center mb-8">
+      <div class="text-5xl mb-4">🔐</div>
+      <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Reset Password</h1>
+      <p class="text-gray-500 mt-2">Buat password baru yang kuat dan aman</p>
+    </div>
 
-      <form action="{{ route('reset.submit') }}" method="POST">
+    {{-- Form Card --}}
+    <div class="bg-white rounded-2xl p-8 shadow-lg border border-cyan-100">
+      <form action="{{ route('reset.submit') }}" method="POST" class="space-y-5">
         @csrf
-
         <input type="hidden" name="email" value="{{ session('email') }}">
 
-        <label>Password Baru</label>
-        <input type="password" name="password" class="form-control mb-3" required>
+        {{-- New Password Field --}}
+        <div>
+          <label class="block text-gray-700 font-semibold text-sm mb-2">Password Baru</label>
+          <input 
+            type="password" 
+            name="password" 
+            class="w-full px-4 py-3 border border-cyan-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
+            required
+            placeholder="Minimal 8 karakter"
+          >
+          @error('password')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
 
-        <label>Konfirmasi Password</label>
-        <input type="password" name="password_confirmation" class="form-control mb-3" required>
+        {{-- Confirm Password Field --}}
+        <div>
+          <label class="block text-gray-700 font-semibold text-sm mb-2">Konfirmasi Password</label>
+          <input 
+            type="password" 
+            name="password_confirmation" 
+            class="w-full px-4 py-3 border border-cyan-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
+            required
+            placeholder="Ulangi password baru"
+          >
+          @error('password_confirmation')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
 
-        <button class="btn w-100" style="background:#1B5E20;color:white;">Reset Password</button>
+        {{-- Reset Button --}}
+        <button 
+          type="submit"
+          class="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cyan-200 transition duration-200 transform hover:scale-105 mt-6"
+        >
+          Reset Password
+        </button>
       </form>
+
+      {{-- Back to Login Link --}}
+      <p class="text-center text-gray-600 text-sm mt-6">
+        <a href="/login" class="text-cyan-500 font-semibold hover:text-cyan-600 transition">
+          Kembali ke Login
+        </a>
+      </p>
     </div>
   </div>
 </div>

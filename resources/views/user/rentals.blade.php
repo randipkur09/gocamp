@@ -1,97 +1,135 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5">
-    <h2 class="mb-4 fw-bold text-success">Daftar Transaksi Penyewaan</h2>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-slate-900 mb-2">Transaksi Penyewaan Saya</h1>
+      <p class="text-slate-600">Kelola dan pantau semua rental Anda di sini.</p>
+    </div>
 
-    {{-- Flash Message --}}
+    <!-- Alerts -->
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+      <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <p class="text-green-700 text-sm font-semibold">{{ session('success') }}</p>
+      </div>
     @elseif(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+      <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 text-sm font-semibold">{{ session('error') }}</p>
+      </div>
     @endif
 
-    {{-- Jika tidak ada transaksi --}}
+    <!-- Empty State -->
     @if($rentals->isEmpty())
-        <div class="alert alert-info">
-            Anda belum memiliki transaksi penyewaan.
-        </div>
+      <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-12 text-center">
+        <svg class="mx-auto h-16 w-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <p class="text-slate-600 text-lg">Anda belum memiliki transaksi penyewaan.</p>
+        <a href="{{ route('user.dashboard') }}" class="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all">
+          Mulai Sewa Sekarang
+        </a>
+      </div>
     @else
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle shadow-sm">
-                <thead class="table-dark text-center">
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Alat</th>
-                        <th>Durasi (hari)</th>
-                        <th>Total Harga</th>
-                        <th>Tanggal Sewa</th>
-                        <th>Status</th>
-                        <th>Bukti Pembayaran</th>
-                        <th width="220">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="text-center">
-                    @foreach($rentals as $index => $r)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $r->product->name }}</td>
-                            <td>{{ $r->days }} hari</td>
-                            <td>Rp{{ number_format($r->total_price, 0, ',', '.') }}</td>
-                            <td>{{ $r->created_at->format('d M Y') }}</td>
-                            <td>
-                                @if($r->status == 'pending')
-                                    <span class="badge bg-warning text-dark">Menunggu Konfirmasi</span>
-                                @elseif($r->status == 'approved')
-                                    <span class="badge bg-success">Disetujui</span>
-                                @elseif($r->status == 'rejected')
-                                    <span class="badge bg-danger">Ditolak</span>
-                                @else
-                                    <span class="badge bg-secondary">{{ ucfirst($r->status) }}</span>
-                                @endif
-                            </td>
+      <!-- Rentals Table -->
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-100">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gradient-to-r from-cyan-50 to-blue-50 border-b border-slate-200">
+              <tr>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Nama Alat</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Durasi</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Total Harga</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Tanggal Sewa</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              @foreach($rentals as $index => $r)
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 text-slate-900">{{ $index + 1 }}</td>
+                  <td class="px-6 py-4 text-slate-900 font-medium">{{ $r->product->name }}</td>
+                  <td class="px-6 py-4 text-slate-700">{{ $r->days }} hari</td>
+                  <td class="px-6 py-4 text-slate-900 font-semibold">Rp{{ number_format($r->total_price, 0, ',', '.') }}</td>
+                  <td class="px-6 py-4 text-slate-700">{{ $r->created_at->format('d M Y') }}</td>
+                  <td class="px-6 py-4">
+                    <!-- Status Badge -->
+                    @if($r->status == 'pending')
+                      <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Menunggu</span>
+                    @elseif($r->status == 'approved')
+                      <span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Disetujui</span>
+                    @elseif($r->status == 'rejected')
+                      <span class="inline-block px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">Ditolak</span>
+                    @else
+                      <span class="inline-block px-3 py-1 bg-slate-100 text-slate-800 text-xs font-semibold rounded-full">{{ ucfirst($r->status) }}</span>
+                    @endif
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="space-y-2">
+                      <!-- Upload Payment Proof -->
+                      @if(!$r->payment_proof && $r->status == 'pending')
+                        <form action="{{ route('user.uploadPayment', $r->id) }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
+                          @csrf
+                          <input 
+                            type="file" 
+                            name="payment_proof" 
+                            accept="image/*"
+                            required
+                            class="flex-1 text-sm border border-slate-300 rounded px-2 py-1"
+                          >
+                          <button 
+                            type="submit"
+                            class="px-3 py-1 bg-cyan-500 text-white text-sm font-semibold rounded hover:bg-cyan-600 transition-colors"
+                          >
+                            Upload
+                          </button>
+                        </form>
+                      @elseif($r->payment_proof)
+                        <div class="text-center">
+                          <a 
+                            href="{{ asset('storage/' . $r->payment_proof) }}" 
+                            target="_blank"
+                            class="inline-block"
+                          >
+                            <img 
+                              src="{{ asset('storage/' . $r->payment_proof) }}" 
+                              alt="Bukti Pembayaran"
+                              class="w-12 h-12 object-cover rounded border border-slate-300 hover:scale-110 transition-transform cursor-pointer"
+                            >
+                          </a>
+                          <p class="text-xs text-green-600 font-semibold mt-1">Sudah Upload</p>
+                        </div>
+                      @endif
 
-                            {{-- Bukti pembayaran --}}
-                            <td>
-                                @if($r->payment_proof)
-                                    <a href="{{ asset('storage/' . $r->payment_proof) }}" target="_blank">
-                                        <img src="{{ asset('storage/' . $r->payment_proof) }}" alt="Bukti Pembayaran" width="80" class="rounded border">
-                                    </a>
-                                @else
-                                    <span class="text-muted">Belum diupload</span>
-                                @endif
-                            </td>
-
-                            {{-- Aksi --}}
-                            <td>
-                                {{-- Upload bukti pembayaran --}}
-                                @if(!$r->payment_proof)
-                                    <form action="{{ route('user.uploadPayment', $r->id) }}" method="POST" enctype="multipart/form-data" class="mb-2">
-                                        @csrf
-                                        <input type="file" name="payment_proof" class="form-control form-control-sm mb-1" required>
-                                        <button type="submit" class="btn btn-sm btn-primary w-100">Upload Bukti</button>
-                                    </form>
-                                @endif
-
-                                {{-- Hapus transaksi (jika pending) --}}
-                                @if($r->status == 'pending')
-                                    <form action="{{ route('user.rentals.destroy', $r->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus transaksi ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger w-100">Hapus</button>
-                                    </form>
-                                @endif
-
-                                {{-- Sudah upload --}}
-                                @if($r->payment_proof)
-                                    <small class="text-success d-block mt-1">Sudah diupload</small>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                      <!-- Delete Rental -->
+                      @if($r->status == 'pending')
+                        <form 
+                          action="{{ route('user.rentals.destroy', $r->id) }}" 
+                          method="POST" 
+                          onsubmit="return confirm('Yakin ingin menghapus transaksi ini?')"
+                        >
+                          @csrf
+                          @method('DELETE')
+                          <button 
+                            type="submit"
+                            class="w-full px-3 py-1 bg-red-500 text-white text-sm font-semibold rounded hover:bg-red-600 transition-colors"
+                          >
+                            Hapus
+                          </button>
+                        </form>
+                      @endif
+                    </div>
+                  </td>
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
         </div>
+      </div>
     @endif
+  </div>
 </div>
 @endsection

@@ -1,76 +1,140 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" style="margin-top: 40px; min-height: 90vh;">
-  <div class="row justify-content-center">
-    <div class="col-md-5">
-      <div class="card shadow p-4">
-        <h3 class="text-center text-success fw-bold mb-4">Daftar Akun GoCamp</h3>
+<div class="flex justify-center items-center min-h-screen pt-20 pb-10">
+  <div class="w-full max-w-md">
+    {{-- Header --}}
+    <div class="text-center mb-8">
+      <div class="text-5xl mb-4">🏕️</div>
+      <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Buat Akun GoCamp</h1>
+      <p class="text-gray-500 mt-2">Bergabunglah dengan ribuan penggemar camping</p>
+    </div>
 
-        {{-- Form Registrasi --}}
-        <form method="POST" action="/register">
-          @csrf
-          <div class="mb-3">
-            <label class="form-label">Nama Lengkap</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
-          </div>
+    {{-- Form Card --}}
+    <div class="bg-white rounded-2xl p-8 shadow-lg border border-cyan-100">
+      <form method="POST" action="/register" class="space-y-4">
+        @csrf
 
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
-          </div>
+        {{-- Full Name Field --}}
+        <div>
+          <label class="block text-gray-700 font-semibold text-sm mb-2">Nama Lengkap</label>
+          <input 
+            type="text" 
+            name="name" 
+            class="w-full px-4 py-3 border border-cyan-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
+            value="{{ old('name') }}"
+            required
+            placeholder="Nama Anda"
+          >
+          @error('name')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
 
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required>
-          </div>
+        {{-- Email Field --}}
+        <div>
+          <label class="block text-gray-700 font-semibold text-sm mb-2">Email</label>
+          <input 
+            type="email" 
+            name="email" 
+            class="w-full px-4 py-3 border border-cyan-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
+            value="{{ old('email') }}"
+            required
+            placeholder="nama@email.com"
+          >
+          @error('email')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
 
-          <div class="mb-3">
-            <label class="form-label">Konfirmasi Password</label>
-            <input type="password" name="password_confirmation" class="form-control" required>
-          </div>
+        {{-- Password Field --}}
+        <div>
+          <label class="block text-gray-700 font-semibold text-sm mb-2">Password</label>
+          <input 
+            type="password" 
+            name="password" 
+            class="w-full px-4 py-3 border border-cyan-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
+            required
+            placeholder="Minimal 8 karakter"
+          >
+          @error('password')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
 
-          <button class="btn w-100" style="background:#1B5E20; color:white;">Daftar Sekarang</button>
+        {{-- Password Confirmation Field --}}
+        <div>
+          <label class="block text-gray-700 font-semibold text-sm mb-2">Konfirmasi Password</label>
+          <input 
+            type="password" 
+            name="password_confirmation" 
+            class="w-full px-4 py-3 border border-cyan-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
+            required
+            placeholder="Ulangi password"
+          >
+          @error('password_confirmation')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
 
-          <p class="mt-3 text-center">
-            Sudah punya akun? 
-            <a href="/login" class="text-success fw-bold">Login di sini</a>
-          </p>
-        </form>
+        {{-- Register Button --}}
+        <button 
+          type="submit"
+          class="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cyan-200 transition duration-200 transform hover:scale-105 mt-6"
+        >
+          Daftar Sekarang
+        </button>
+      </form>
+
+      {{-- Divider --}}
+      <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-cyan-100"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-3 bg-white text-gray-500">atau</span>
+        </div>
       </div>
+
+      {{-- Login Link --}}
+      <p class="text-center text-gray-600">
+        Sudah punya akun?
+        <a href="/login" class="text-cyan-500 font-semibold hover:text-cyan-600 transition">
+          Login di sini
+        </a>
+      </p>
     </div>
   </div>
 </div>
 
-{{-- Script SweetAlert2 --}}
+{{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- Notifikasi pop-up SweetAlert --}}
 @if (session('success'))
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-      icon: 'success',
-      title: 'Registrasi Berhasil!',
-      text: '{{ session('success') }}',
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      Swal.fire({
+        icon: 'success',
+        title: 'Registrasi Berhasil!',
+        text: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+      });
     });
-  });
-</script>
+  </script>
 @endif
 
 @if (session('error'))
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-      icon: 'error',
-      title: 'Registrasi Gagal!',
-      text: '{{ session('error') }}',
-      confirmButtonColor: '#1B5E20'
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      Swal.fire({
+        icon: 'error',
+        title: 'Registrasi Gagal!',
+        text: '{{ session('error') }}',
+        confirmButtonColor: '#00bcd4'
+      });
     });
-  });
-</script>
+  </script>
 @endif
 @endsection
