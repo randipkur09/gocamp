@@ -24,7 +24,7 @@
         <table class="w-full text-left">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
-                    <th class="px-6 py-4 text-sm font-semibold text-gray-700">#</th>
+                    <th class="px-6 py-4 text-sm font-semibold text-gray-700">No</th>
                     <th class="px-6 py-4 text-sm font-semibold text-gray-700">User</th>
                     <th class="px-6 py-4 text-sm font-semibold text-gray-700">Produk</th>
                     <th class="px-6 py-4 text-sm font-semibold text-gray-700">Durasi (hari)</th>
@@ -90,7 +90,7 @@
                                 @method('PUT')
                                 <input type="hidden" name="status" value="returned">
                                 <button type="submit" class="px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-                                    Kembalikan Barang
+                                    Barang Dikembalikan
                                 </button>
                             </form>
 

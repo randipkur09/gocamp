@@ -15,25 +15,23 @@ class AdminController extends Controller
         // Ambil semua produk
         $products = Product::orderBy('created_at', 'desc')->get();
 
-        // Ambil semua penyewaan lengkap dengan relasi user & product
+        // Ambil semua penyewaan
         $rentals = Rental::with(['product', 'user'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Hitung total penyewa unik
+        // Hitung total penyewa
         $renters = User::whereHas('rentals')->count();
 
-        // Hitung transaksi hari ini
+        // Transaksi hari ini
         $transactionsToday = Rental::whereDate('created_at', Carbon::today())->count();
 
-        // Hitung total pemasukan = jumlah * harga_per_hari * durasi
+        // Total income
         $totalIncome = Rental::with('product')->get()->sum(function ($rental) {
-    if (!$rental->product) return 0;
-    return $rental->product->price_per_day * $rental->days; // <- gunakan price_per_day
-});
+            if (!$rental->product) return 0;
+            return $rental->product->price_per_day * $rental->days;
+        });
 
-
-        // Return semua data ke dashboard admin
         return view('admin.dashboard', compact(
             'products',
             'rentals',
@@ -41,5 +39,20 @@ class AdminController extends Controller
             'transactionsToday',
             'totalIncome'
         ));
+    }
+
+    // Halaman Semua Notifikasi Admin
+    public function notifications()
+    {
+        // Ambil semua notifikasi milik admin
+        $notifications = auth()->user()
+            ->notifications()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Tandai semua sebagai sudah dibaca
+        auth()->user()->unreadNotifications->markAsRead();
+
+        return view('admin.notifikasi.index', compact('notifications'));
     }
 }

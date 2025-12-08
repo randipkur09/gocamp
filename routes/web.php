@@ -117,6 +117,9 @@ Route::middleware(['auth'])->group(function () {
         auth()->user()->unreadNotifications->markAsRead();
         return back();
     })->name('markAllRead');
+
+    Route::get('/admin/notifications', [AdminController::class, 'notifications'])
+        ->name('admin.notifications');
 });
 
 // =============================
