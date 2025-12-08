@@ -49,6 +49,19 @@
       <label class="block text-sm font-semibold text-gray-900 mb-2">Stok</label>
       <input type="number" name="stok" value="{{ $product->stok }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" required>
     </div>
+
+    <!-- Kategori -->
+    <div class="md:col-span-2">
+      <label class="block text-sm font-semibold text-gray-900 mb-2">Kategori</label>
+      <select name="category_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" required>
+        <option value="">Pilih Kategori</option>
+        @foreach($categories as $category)
+          <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>
+            {{ $category->name }}
+          </option>
+        @endforeach
+      </select>
+    </div>
   </div>
 
   <!-- Deskripsi -->
@@ -94,5 +107,4 @@
     </button>
   </div>
 </form>
-
 @endsection

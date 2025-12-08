@@ -28,9 +28,10 @@ class AdminController extends Controller
 
         // Hitung total pemasukan = jumlah * harga_per_hari * durasi
         $totalIncome = Rental::with('product')->get()->sum(function ($rental) {
-            if (!$rental->product) return 0;
-            return $rental->product->price * $rental->days;
-        });
+    if (!$rental->product) return 0;
+    return $rental->product->price_per_day * $rental->days; // <- gunakan price_per_day
+});
+
 
         // Return semua data ke dashboard admin
         return view('admin.dashboard', compact(

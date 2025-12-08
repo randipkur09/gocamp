@@ -14,11 +14,23 @@ class Rental extends Model
         'product_id',
         'days',
         'total_price',
-        'payment_proof',
         'status',
+        'rental_date',
         'return_date',
-        'is_returned',
+        'payment_proof'
     ];
+
+    protected $dates = [
+        'rental_date',
+        'return_date',
+        'created_at',
+        'updated_at',
+    ];
+
+    protected $casts = [
+    'rental_date' => 'datetime',
+    'return_date' => 'datetime',
+];
 
     public function user()
     {

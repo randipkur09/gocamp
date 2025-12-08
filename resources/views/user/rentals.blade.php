@@ -69,9 +69,26 @@
                   </td>
                   <td class="px-6 py-4">
                     <div class="space-y-2">
+                      <!-- Pilihan Bank -->
+                      @if($r->status == 'pending' && !$r->payment_proof)
+                        <div class="flex gap-2">
+                          <button onclick="alert('Nomor Rekening Mandiri: 123-456-7890')" class="p-2 bg-white text-gray-800 border border-slate-300 rounded hover:bg-slate-100" title="Mandiri">
+    <img src="{{ asset('icons/mandiri.png') }}" alt="BCA" class="w-5 h-5">
+</button>
+
+<button onclick="alert('Nomor Rekening BRI: 987-654-3210')" class="p-2 bg-white text-gray-800 border border-slate-300 rounded hover:bg-slate-100" title="BRI">
+    <img src="{{ asset('icons/bri.png') }}" alt="BRI" class="w-5 h-5">
+</button>
+
+<button onclick="alert('Nomor Rekening SeaBank: 111-222-3333')" class="p-2 bg-white text-gray-800 border border-slate-300 rounded hover:bg-slate-100" title="SeaBank">
+    <img src="{{ asset('icons/seabank.jpeg') }}" alt="SeaBank" class="w-5 h-5">
+</button>
+                        </div>
+                      @endif
+
                       <!-- Upload Payment Proof -->
                       @if(!$r->payment_proof && $r->status == 'pending')
-                        <form action="{{ route('user.uploadPayment', $r->id) }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
+                        <form action="{{ route('user.uploadPayment', $r->id) }}" method="POST" enctype="multipart/form-data" class="flex gap-2 mt-2">
                           @csrf
                           <input 
                             type="file" 
@@ -88,7 +105,7 @@
                           </button>
                         </form>
                       @elseif($r->payment_proof)
-                        <div class="text-center">
+                        <div class="text-center mt-2">
                           <a 
                             href="{{ asset('storage/' . $r->payment_proof) }}" 
                             target="_blank"
@@ -110,6 +127,7 @@
                           action="{{ route('user.rentals.destroy', $r->id) }}" 
                           method="POST" 
                           onsubmit="return confirm('Yakin ingin menghapus transaksi ini?')"
+                          class="mt-2"
                         >
                           @csrf
                           @method('DELETE')
